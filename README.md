@@ -1,10 +1,10 @@
 # Console-Quest
 ### Скриншот игры
 
-![screenshot](https://github.com/OtryvnoyKalendar/Console-Platformer/blob/main/screenshots/screenshot%201.png)
+![screenshot](https://github.com/OtryvnoyKalendar/Console-Quest/blob/main/screenshots/screenshot%201.png)
 
 ### Общее описание
-Это прототип консольной игры, которую я написал для практики языка C. Игра сделана на основе видео с ютуб канала Begin End и адаптирована под Linux. Вот *ссылки на видео*:  
+Это прототип консольной игры, которую я написал для практики языка C. Основной целью являлась практика с чтением и записью файлов, реализация сохранений. Игра сделана на основе видео с ютуб канала Begin End и адаптирована под Linux. Вот *ссылки на видео*:  
 [Язык Си с нуля - Урок 39 - Пишем игру квест.](https://www.youtube.com/watch?v=jucHXihq1Xs&list=PLBOPkQsFLCR2DWRY74L03FmbRtz_Yy73_&index=40),  
 [Язык Си с нуля - Урок 43 - Пишем игру квест. Добавляем NPC, предметы и задания.](https://www.youtube.com/watch?v=9YGPJM1cWC8&list=PLBOPkQsFLCR2DWRY74L03FmbRtz_Yy73_&index=44).
 
@@ -35,3 +35,4 @@ sh project_start gdb
 Я добился следующих важных моментов:
 1. в игре нет миганий
 2. есть возможность создавать объекты разных цветов
+3. Можно сохраняться под разными пользователями, если изменить код загрузчика файлов
