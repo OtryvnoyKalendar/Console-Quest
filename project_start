@@ -1,0 +1,51 @@
+#!/bin/bash
+# версия скрипта: 1.6
+
+clear
+
+debug_mode=""
+if [ $# -ge 1 ]; then
+	if [ "$1" = "gdb" ]; then
+		debug_mode="-g3"
+	else
+		echo "Некорректный аргумент компиляции"
+	fi
+fi
+
+file_exists=false
+# Проверяем наличие файла в текущей директории
+if [ -f "main.out" ]; then
+	rm main.out
+	file_exists=true
+fi
+
+gcc main.c -o main.out -Wall -lm -lncurses $debug_mode
+
+# Повторно проверяем наличие файла
+if [ -f "main.out" ]; then	
+	echo "Вот и начинается программа:"
+	echo "---"
+	
+	if [ "$debug_mode" = "-g3" ]; then
+		gdb ./main.out
+	else
+		./main.out
+	fi
+	
+	echo "---"
+	echo "Программа возвращает :" $?
+	
+	rm main.out
+	
+	if [ "$file_exists" = true ]; then
+		echo "Исполняемый файл был удалён дважды"
+	else
+		echo "Исполняемый файл был удалён после завершения работы программы"
+	fi
+else
+	if [ "$file_exists" = true ]; then
+		echo "Исполняемый файл был удалён только перед началом работы программы"
+	else
+		echo "Исполняемых файлов найдено не было"
+	fi
+fi
