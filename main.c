@@ -40,6 +40,8 @@ void ShowMap() {
 				color = COLOR_WALL;
 			else if(symbol == SYMBOL_PLAYER)
 				color = COLOR_PLAYER;
+			else if(symbol == SYMBOL_DOOR)
+				color = COLOR_DOOR;
 			PutSymbolToConsole(i, j, symbol, color);
 		}
 	refresh();
@@ -144,17 +146,32 @@ void obj_StartDialog(TObj* obj) {
 	
 	char answer;
 	do {
-		if(obj->oType == '/') {
-			clear();
+		clear();
+		attron(COLOR_PAIR(COLOR_TEXT));
+		printw("%s\n", obj->name);
+		
+		if(obj->oType == SYMBOL_DOOR) {
+			printw("\nEnter the door?");
+			printw("\n[1] - Yes");
+			printw("\n[0] - No\n");
+			refresh();
+			
+			scanf("%c", &answer);
+			if(answer == '1') {
+				player.pos.x += (obj->pos.x - player.pos.x) * 2;
+				player.pos.y += (obj->pos.y - player.pos.y) * 2;
+				return;
+			}
 		}
 		else
 			answer = '0';
+		refresh();
 	}
 	while(answer != '0');
 }
 
 TObj* obj_GetByXY(int y, int x) {
-	for(int i; i<objCnt; i++)
+	for(int i = 0; i<objCnt; i++)
 		if(obj[i].pos.x == x && obj[i].pos.y == y)
 			return obj + i;
 	
@@ -200,7 +217,7 @@ void PutOnMap_player() {
 // основной цикл
 
 void GameControl() {
-	POINT prevPLayerPos = player.pos;
+	POINT prevPlayerPos = player.pos;
 	
 	int keypress = wgetch(stdscr);
 	
@@ -218,8 +235,11 @@ void GameControl() {
 	}
 	
 	if(isMapCellExists(player.pos.y, player.pos.x))
-		if(map[player.pos.y][player.pos.x] != ' ')
-			player.pos = prevPLayerPos;
+		if(map[player.pos.y][player.pos.x] != ' ') {
+			TObj* obj = obj_GetByXY(player.pos.y, player.pos.x);
+			player.pos = prevPlayerPos;
+			obj_StartDialog(obj);
+		}
 }
 
 int main() {

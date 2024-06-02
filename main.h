@@ -12,11 +12,14 @@ char map[MAP_HEIGHT][MAP_WIDTH+1];
 
 #define SYMBOL_PLAYER 	'@'
 #define SYMBOL_WALL 	'#'
+#define SYMBOL_DOOR 	'/'
 
 #define COLOR_PLAYER 	COLOR_RED
 #define COLOR_WALL 		COLOR_BLUE
+#define COLOR_DOOR 		COLOR_YELLOW
 
 #define COLOR_STANDARD COLOR_GREEN
+#define COLOR_TEXT COLOR_WHITE
 #define KEY_ESCAPE 27
 
 typedef struct {
