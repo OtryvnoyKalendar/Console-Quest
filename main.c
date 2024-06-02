@@ -1,6 +1,7 @@
 #include <stdio.h> // работа с файлами
 #include <stdlib.h> // для exit()
-#include <string.h> // 
+#include <string.h> // для strlen()
+#include <unistd.h> // для usleep()
 
 // мои функции и процедуры
 
@@ -165,6 +166,25 @@ void obj_PutOnMap() {
 		map[obj[i].pos.y][obj[i].pos.x] = obj[i].oType;
 }
 
+int player_DeleteItem(TItem item, int delCnt) {
+	int cnt = player_GetItemCnt(item);
+	if(delCnt>cnt)
+		return 0;
+	
+	int len = strlen(item.name);
+	if(item.name[len-1] == '\n')
+		len--;
+	
+	for(int i=0; i<20; i++)
+		if(strncmp(item.name, player.items[i].name, len) == 0) {
+			memset(player.items[i].name, 0, sizeof(player.items[i].name));
+			delCnt--;
+			if(delCnt < 1)
+				return 1;
+		}
+	return -1;
+}
+
 void player_AddItem(TItem item) {
 	for(int i=0; i<20; i++)
 		if(player.items[i].name[0] == 0) {
@@ -205,19 +225,29 @@ void obj_StartDialog(TObj* obj) {
 				}
 			}
 		}
-		else if(obj->oType == 'N') {
-			printw("\nNeed a %s?", obj->item_Given.name);
-			printw("\n[1] - Yes");
-			printw("\n[0] - No\n");
-			refresh();
-			
-			scanf("%c", &answer);
-			if(answer == '1') {
-				TItem item;
-				sprintf(item.name, "%s", obj->item_Given.name);
-				if(player_GetItemCnt(item) == 0)
-					player_AddItem(item);
-				return;
+		else if(obj->oType == SYMBOL_OWNER) {
+			if(player_GetItemCnt(obj->item_Need) < obj->item_Cnt) {
+				printw("\n%s\n", obj->item_Message);
+				printw("\n[0] - Exit menu");
+				refresh();
+				
+				scanf("%c", &answer);
+			}
+			else {
+				printw("\nNeed a %s?", obj->item_Given.name);
+				printw("\n[1] - Yes");
+				printw("\n[0] - No\n");
+				refresh();
+				
+				scanf("%c", &answer);
+				if(answer == '1') {
+					TItem item;
+					sprintf(item.name, "%s", obj->item_Given.name);
+					if( player_GetItemCnt(item) == 0
+						&& player_DeleteItem(obj->item_Need, obj->item_Cnt) > 0)
+						player_AddItem(item);
+					return;
+				}
 			}
 		}
 		else

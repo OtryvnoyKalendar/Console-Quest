@@ -2,9 +2,9 @@ Warehouse Owner
 N
 37
 13
--
--
-0
+I need 5 apples
+Apple
+5
 Warehouse key
 Warehouse Door
 /
