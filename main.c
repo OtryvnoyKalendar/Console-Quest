@@ -108,10 +108,66 @@ void Load_player(char* name) {
 		Init_player(0, 0, 5, 5, name);
 }
 
+// код второго урока с объектами
+
+TObj* AddObj() {
+	objCnt++;
+	obj = realloc(obj, sizeof(*obj)*objCnt);
+	return obj + objCnt - 1;
+}
+
+void obj_LoadFromFile(char* name) {
+	objCnt = 0;
+	obj = realloc(obj, 0);
+	TObj* tmp;
+	FILE* f = fopen(name, "rt");
+	if(f) {
+		while(!feof(f)) {
+			tmp = AddObj();
+			fgets(tmp->name, 19, f);
+			fscanf(f, "%c", &tmp->oType);
+			fscanf(f, "%d", &tmp->pos.x);
+			fscanf(f, "%d\n", &tmp->pos.y);
+		}
+		fclose(f);
+	}
+}
+
+void obj_PutOnMap() {
+	for(int i=0; i< objCnt; i++)
+		map[obj[i].pos.y][obj[i].pos.x] = obj[i].oType;
+}
+
+void obj_StartDialog(TObj* obj) {
+	if(obj == NULL)
+		return;
+	
+	char answer;
+	do {
+		if(obj->oType == '/') {
+			clear();
+		}
+		else
+			answer = '0';
+	}
+	while(answer != '0');
+}
+
+TObj* obj_GetByXY(int y, int x) {
+	for(int i; i<objCnt; i++)
+		if(obj[i].pos.x == x && obj[i].pos.y == y)
+			return obj + i;
+	
+	return NULL;
+}
+
 void LoadLocation_player() {
 	char buffer[100];
 	sprintf(buffer, "map/map_%d_%d.txt", player.locPos.x, player.locPos.y);
 	loc_LoadFromFile(buffer);
+	
+	sprintf(buffer, "map/obj_%d_%d.txt", player.locPos.x, player.locPos.y);
+	obj_LoadFromFile(buffer);
 }
 
 void PutOnMap_player() {
@@ -152,17 +208,13 @@ void GameControl() {
 		case KEY_ESCAPE:
 			CloseProgram();
 		case 'a':
-			player.pos.x--;
-			break;
+			player.pos.x--; break;
 		case 'd':
-			player.pos.x++;
-			break;
+			player.pos.x++;	break;
 		case 'w':
-			player.pos.y--;
-			break;
+			player.pos.y--;	break;
 		case 's':
-			player.pos.y++;
-			break;
+			player.pos.y++;	break;
 	}
 	
 	if(isMapCellExists(player.pos.y, player.pos.x))
@@ -179,7 +231,8 @@ int main() {
 	
 	while(1) {
 		loc_PutOnMap();
-			
+		obj_PutOnMap();
+		
 		PutOnMap_player();
 		
 		ShowMap();

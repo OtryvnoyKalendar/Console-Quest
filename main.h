@@ -35,4 +35,13 @@ struct {
 	POINT locPos;
 } player;
 
+typedef struct {
+	char name[20];
+	char oType;
+	POINT pos;
+} TObj;
+
+TObj *obj = NULL;
+int objCnt = 0;
+
 #endif // MAIN_H
