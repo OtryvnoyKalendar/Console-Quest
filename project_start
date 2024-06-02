@@ -1,12 +1,12 @@
 #!/bin/bash
-# версия скрипта: 1.6
+# версия скрипта: 1.7
 
 clear
 
 debug_mode=""
 if [ $# -ge 1 ]; then
 	if [ "$1" = "gdb" ]; then
-		debug_mode="-g3"
+		debug_mode="-ggdb3"
 	else
 		echo "Некорректный аргумент компиляции"
 	fi
@@ -14,28 +14,39 @@ fi
 
 file_exists=false
 # Проверяем наличие файла в текущей директории
-if [ -f "main.out" ]; then
-	rm main.out
+if [ -f "mycprog" ]; then
+	rm mycprog
 	file_exists=true
 fi
 
-gcc main.c -o main.out -Wall -lm -lncurses $debug_mode
+gcc main.c -o mycprog -Wall -lm -lncurses $debug_mode
 
 # Повторно проверяем наличие файла
-if [ -f "main.out" ]; then	
+if [ -f "mycprog" ]; then
+	# Обработчик сигнала INT при завершении через Ctrl+C
+	trap 'echo "\nПрограмма была закрыта вручную, скрипт продолжил выполняться"' INT
+	
 	echo "Вот и начинается программа:"
 	echo "---"
 	
-	if [ "$debug_mode" = "-g3" ]; then
-		gdb ./main.out
+	if [ "$debug_mode" = "-ggdb3" ]; then
+		echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope # разрешение на присоединение к процессам
+		gnome-terminal -- sh -c 'sleep 1;
+		pid=$(pgrep mycprog);
+		echo "PID: $pid";
+		gdb -silent ./mycprog -pid $pid;' #zsh'
+		./mycprog
+		return_value=$?
+		echo 1 | sudo tee /proc/sys/kernel/yama/ptrace_scope # запрет на присоединение к процессам
 	else
-		./main.out
+		./mycprog
+		return_value=$?
 	fi
 	
 	echo "---"
-	echo "Программа возвращает :" $?
+	echo "Программа возвращает :" $return_value
 	
-	rm main.out
+	rm mycprog
 	
 	if [ "$file_exists" = true ]; then
 		echo "Исполняемый файл был удалён дважды"

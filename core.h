@@ -18,7 +18,7 @@ void ErrorCloseProgram(const char* message) {
 void CloseProgram() {
 	BeforeCloseProgram();
 	
-	exit(1);
+	exit(0);
 }
 
 // сигналы
